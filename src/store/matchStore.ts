@@ -26,12 +26,25 @@ interface SavedMatch {
     points: Point[];
 }
 
+interface TrainingSession {
+    id: string;
+    date: string;        // YYYY-MM-DD para agrupar por día
+    startTime: string;   // ISO timestamp de inicio
+    endTime?: string;    // ISO timestamp de fin
+    points: Point[];     // Mismos puntos que en partido
+    duration?: number;   // Duración en minutos (manual)
+}
+
 interface MatchState {
     points: Point[];
     score: Score;
     teamNames: { us: string; them: string };
     servingTeam: 'us' | 'them';
-    matches: SavedMatch[]; // History
+    matches: SavedMatch[];
+    // Training
+    trainingSessions: TrainingSession[];
+    trainingPoints: Point[];
+    trainingStartTime: string;
     addPoint: (point: Point) => void;
     incrementScore: (winner: 'us' | 'them') => void;
     decrementScore: (team: 'us' | 'them') => void;
@@ -42,6 +55,12 @@ interface MatchState {
     setTeamNames: (names: { us: string; them: string }) => void;
     toggleServe: () => void;
     setServingTeam: (team: 'us' | 'them') => void;
+    // Training actions
+    addTrainingPoint: (point: Point) => void;
+    saveTrainingSession: (duration?: number) => void;
+    clearTrainingSession: () => void;
+    deleteTrainingSession: (id: string) => void;
+    undoLastTrainingPoint: () => void;
 }
 
 const POINTS_SEQUENCE = ["0", "15", "30", "40"];
@@ -59,6 +78,10 @@ export const useMatchStore = create<MatchState>()(
             teamNames: { us: 'Nosotros', them: 'Ellos' },
             servingTeam: 'us',
             matches: [],
+            // Training
+            trainingSessions: [],
+            trainingPoints: [],
+            trainingStartTime: new Date().toISOString(),
 
             addPoint: (point) => set((state) => ({ points: [...state.points, point] })),
 
@@ -136,7 +159,47 @@ export const useMatchStore = create<MatchState>()(
 
             toggleServe: () => set((state) => ({ servingTeam: state.servingTeam === 'us' ? 'them' : 'us' })),
 
-            setServingTeam: (team) => set({ servingTeam: team })
+            setServingTeam: (team) => set({ servingTeam: team }),
+
+            // Training actions
+            addTrainingPoint: (point) => set((state) => ({
+                trainingPoints: [...state.trainingPoints, point]
+            })),
+
+            saveTrainingSession: (duration) => set((state) => {
+                if (state.trainingPoints.length === 0) return state;
+
+                const now = new Date();
+                const dateOnly = now.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                const newSession: TrainingSession = {
+                    id: crypto.randomUUID(),
+                    date: dateOnly,
+                    startTime: state.trainingStartTime,
+                    endTime: now.toISOString(),
+                    points: state.trainingPoints,
+                    duration: duration
+                };
+
+                return {
+                    trainingSessions: [newSession, ...state.trainingSessions],
+                    trainingPoints: [],
+                    trainingStartTime: new Date().toISOString()
+                };
+            }),
+
+            clearTrainingSession: () => set({
+                trainingPoints: [],
+                trainingStartTime: new Date().toISOString()
+            }),
+
+            deleteTrainingSession: (id) => set((state) => ({
+                trainingSessions: state.trainingSessions.filter(s => s.id !== id)
+            })),
+
+            undoLastTrainingPoint: () => set((state) => ({
+                trainingPoints: state.trainingPoints.slice(0, -1)
+            }))
         }),
         {
             name: 'padel-insight-storage', // unique name

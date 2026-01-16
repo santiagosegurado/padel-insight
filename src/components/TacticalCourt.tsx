@@ -22,7 +22,7 @@ interface TacticalCourtProps {
     points?: Point[];
     tokens?: Token[];
     showHeatmap?: boolean;
-    mode?: 'stats' | 'tactics';
+    mode?: 'stats' | 'tactics' | 'training';
     onCourtClick?: (e: any) => void;
     onTokenDragEnd?: (id: string, x: number, y: number) => void;
 }
@@ -75,8 +75,8 @@ const TacticalCourt: React.FC<TacticalCourtProps> = ({
                     fill="#4a90e2" // Blue court
                     stroke="white"
                     strokeWidth={2}
-                    onClick={mode === 'stats' ? onCourtClick : undefined}
-                    onTap={mode === 'stats' ? onCourtClick : undefined}
+                    onClick={(mode === 'stats' || mode === 'training') ? onCourtClick : undefined}
+                    onTap={(mode === 'stats' || mode === 'training') ? onCourtClick : undefined}
                 />
 
                 {/* Net (Middle) */}
@@ -128,8 +128,8 @@ const TacticalCourt: React.FC<TacticalCourtProps> = ({
                     strokeWidth={1}
                 />
 
-                {/* Render Points (Only in Stats Mode) */}
-                {mode === 'stats' && points.map((p, i) => {
+                {/* Render Points (Stats and Training Mode) */}
+                {(mode === 'stats' || mode === 'training') && points.map((p, i) => {
                     if (showHeatmap) {
                         return (
                             <Circle
