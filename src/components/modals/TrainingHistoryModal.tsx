@@ -36,14 +36,6 @@ export const TrainingHistoryModal = ({
         return acc;
     }, {} as Record<string, TrainingSession[]>);
 
-    const formatDuration = (startTime: string, endTime?: string) => {
-        if (!endTime) return 'En progreso';
-        const start = new Date(startTime).getTime();
-        const end = new Date(endTime).getTime();
-        const minutes = Math.floor((end - start) / 60000);
-        return `${minutes} min`;
-    };
-
     const getSessionStats = (sessions: TrainingSession[]) => {
         const allPoints = sessions.flatMap(s => s.points);
         const winners = allPoints.filter(p => p.type === 'winner').length;
