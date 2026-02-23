@@ -197,6 +197,7 @@ function App() {
             saveTrainingSession={saveTrainingSession}
             clearTrainingSession={clearTrainingSession}
             setShowTrainingHistory={setShowTrainingHistory}
+            dimensions={dimensions}
           />
         )}
       </div>
