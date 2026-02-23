@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export type ShotType = 'resto' | 'fondo' | 'volea' | 'bandeja' | 'saque' | 'globo' | 'smash';
 export type Hand = 'drive' | 'reves';
 
-interface Point {
+export interface Point {
     x: number;
     y: number;
     type: 'winner' | 'error';
