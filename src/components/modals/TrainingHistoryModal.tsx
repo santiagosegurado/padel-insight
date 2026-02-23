@@ -119,9 +119,9 @@ export const TrainingHistoryModal = ({
                                                 <div className="flex flex-col">
                                                     <span className="text-white font-bold text-lg">{stats.total} golpes</span>
                                                     <span className="text-white/40 text-xs">
-                                                        <span className="text-emerald-400">{stats.winners} W</span>
+                                                        <span className="text-emerald-400">{stats.winners} A</span>
                                                         {' / '}
-                                                        <span className="text-red-400">{stats.errors} E</span>
+                                                        <span className="text-red-400">{stats.errors} Err</span>
                                                         {' • '}
                                                         {totalDuration} min
                                                     </span>
@@ -135,8 +135,8 @@ export const TrainingHistoryModal = ({
 
                                         {isExpanded && (
                                             <div className="bg-black/20 p-3 pt-0 text-sm border-t border-white/5">
-                                                {/* Winners por tipo */}
-                                                <h4 className="text-white/60 text-xs uppercase font-bold mt-3 mb-2">✅ Winners por Tipo</h4>
+                                                {/* Aciertos por tipo */}
+                                                <h4 className="text-white/60 text-xs uppercase font-bold mt-3 mb-2">✅ Aciertos por Tipo</h4>
                                                 <div className="space-y-1 mb-4">
                                                     {Object.keys(stats.winnersByType).length > 0 ? (
                                                         Object.entries(stats.winnersByType)
@@ -151,7 +151,7 @@ export const TrainingHistoryModal = ({
                                                                 );
                                                             })
                                                     ) : (
-                                                        <p className="text-white/30 text-xs py-2">No hay winners registrados</p>
+                                                        <p className="text-white/30 text-xs py-2">No hay aciertos registrados</p>
                                                     )}
                                                 </div>
 

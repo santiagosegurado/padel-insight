@@ -69,6 +69,7 @@ export const TrainingControls = ({
                 setShotType={setShotType}
                 hand={hand}
                 setHand={setHand}
+                mode="training"
             />
 
             <div className="mt-2 flex flex-col gap-2">
