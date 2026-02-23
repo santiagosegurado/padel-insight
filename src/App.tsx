@@ -111,7 +111,7 @@ function App() {
         setServingTeam={setServingTeam}
       />
 
-      {!showCoinToss && score.sets.length === 0 && score.currentSet.us === 0 && score.currentSet.them === 0 && score.points.us === "0" && score.points.them === "0" && (
+      {mode !== 'training' && !showCoinToss && score.sets.length === 0 && score.currentSet.us === 0 && score.currentSet.them === 0 && score.points.us === "0" && score.points.them === "0" && (
         <button
           onClick={() => setShowCoinToss(true)}
           className={`absolute top-[7.5rem] left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md hover:bg-yellow-400/20 transition-all ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}

@@ -65,11 +65,13 @@ export const StatsControls = ({
                     setHand={setHand}
                 />
 
-                <div className="mt-2 flex flex-col gap-2">
-                    <button onClick={undoLastPoint} className="md:hidden w-full py-2 bg-white/5 rounded text-xs text-white/50">Deshacer Último</button>
-                    <div className="flex gap-2 md:hidden">
-                        <button onClick={() => setShowHistory(true)} className="flex-1 py-2 bg-white/5 rounded text-xs text-white/50">Historial</button>
-                        <button onClick={() => setShowHeatmap(!showHeatmap)} className="flex-1 py-2 bg-white/5 rounded text-xs text-white/50">{showHeatmap ? 'Ocultar Heatmap' : 'Ver Heatmap'}</button>
+                <div className="mt-2 flex flex-col gap-2 md:hidden">
+                    <button onClick={handleFinishMatch} className="w-full py-2 bg-emerald-500/20 text-emerald-200 text-xs font-bold uppercase rounded border border-emerald-500/20">Finalizar y Guardar</button>
+                    <button onClick={undoLastPoint} className="w-full py-2 bg-white/5 text-white text-xs uppercase rounded">Deshacer Último</button>
+                    <div className="flex gap-2">
+                        <button onClick={handleResetMatch} className="flex-1 py-2 bg-red-500/10 text-red-300 text-xs uppercase rounded border border-red-500/10">Reiniciar</button>
+                        <button onClick={() => setShowHistory(true)} className="flex-1 py-2 bg-white/5 text-white/50 text-xs uppercase rounded">Historial</button>
+                        <button onClick={() => setShowHeatmap(!showHeatmap)} className="flex-1 py-2 bg-white/5 text-white/50 text-xs uppercase rounded">{showHeatmap ? 'Ocultar Heatmap' : 'Heatmap'}</button>
                     </div>
                 </div>
 
