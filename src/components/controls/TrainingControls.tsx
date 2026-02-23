@@ -19,6 +19,7 @@ interface TrainingControlsProps {
     saveTrainingSession: (duration: number) => void;
     clearTrainingSession: () => void;
     setShowTrainingHistory: (show: boolean) => void;
+    dimensions: { width: number; height: number };
 }
 
 export const TrainingControls = ({
@@ -35,7 +36,8 @@ export const TrainingControls = ({
     undoLastTrainingPoint,
     saveTrainingSession,
     clearTrainingSession,
-    setShowTrainingHistory
+    setShowTrainingHistory,
+    dimensions
 }: TrainingControlsProps) => {
     // Audio feedback for voice command
     const [audioContext] = useState(() => new (window.AudioContext || (window as any).webkitAudioContext)());
@@ -74,21 +76,33 @@ export const TrainingControls = ({
         const parsedCommand = parseVoiceCommand(transcript);
         if (parsedCommand.isValid) {
 
+            // Calculate screen-specific positions based on court scaling logic
+            const Math_min = Math.min;
+            const scale = Math_min(dimensions.width / 10, dimensions.height / 20);
+            const courtWidth = 10 * scale;
+            const courtHeight = 20 * scale;
+            const offsetX = (dimensions.width - courtWidth) / 2;
+            const offsetY = (dimensions.height - courtHeight) / 2;
+
             // Set default positions based on the shot type and hand
-            let defaultX = 50; // Center
-            let defaultY = 80; // Back of court
+            // Y percentages from top to bottom. X percentages from left to right.
+            let xPercent = 0.5; // Center
+            let yPercent = 0.8; // Back of court
 
             if (parsedCommand.hand === 'drive') {
-                defaultX = 75; // Right side
+                xPercent = 0.75; // Right side
             } else if (parsedCommand.hand === 'reves') {
-                defaultX = 25; // Left side
+                xPercent = 0.25; // Left side
             }
 
             if (parsedCommand.shotType === 'volea') {
-                defaultY = 25; // Close to net
+                yPercent = 0.25; // Close to net
             } else if (parsedCommand.shotType === 'bandeja' || parsedCommand.shotType === 'remate') {
-                defaultY = 40; // Mid-court
+                yPercent = 0.40; // Mid-court
             }
+
+            const defaultX = offsetX + (courtWidth * xPercent);
+            const defaultY = offsetY + (courtHeight * yPercent);
 
             const newPoint: Point = {
                 type: parsedCommand.pointType || 'error',
@@ -103,7 +117,7 @@ export const TrainingControls = ({
             addTrainingPoint(newPoint);
             playSuccessBeep();
         }
-    }, [transcript, addTrainingPoint]);
+    }, [transcript, addTrainingPoint, dimensions]);
 
     const handleToggleVoice = () => {
         if (audioContext.state === 'suspended') {
