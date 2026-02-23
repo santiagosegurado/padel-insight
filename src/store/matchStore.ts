@@ -11,6 +11,8 @@ export interface Point {
     player: 'me' | 'partner' | 'opponent';
     shotType?: ShotType;
     hand?: Hand;
+    isTraining?: boolean;
+    timestamp?: number;
 }
 
 interface Score {

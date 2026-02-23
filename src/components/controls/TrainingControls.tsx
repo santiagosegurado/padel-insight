@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import { ShotSelector } from './ShotSelector';
-import type { Point } from '../../store/matchStore';
+import type { Point, Hand, ShotType } from '../../store/matchStore';
+import { useVoiceRecognition } from '../../hooks/useVoiceRecognition';
+import { parseVoiceCommand } from '../../utils/voiceCommandParser';
 
 interface TrainingControlsProps {
     pointType: 'winner' | 'error';
@@ -28,11 +31,72 @@ export const TrainingControls = ({
     showHeatmap,
     setShowHeatmap,
     trainingPoints,
+    addTrainingPoint,
     undoLastTrainingPoint,
     saveTrainingSession,
     clearTrainingSession,
     setShowTrainingHistory
 }: TrainingControlsProps) => {
+    // Audio feedback for voice command
+    const [audioContext] = useState(() => new (window.AudioContext || (window as any).webkitAudioContext)());
+
+    const playSuccessBeep = () => {
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // High pitch beep
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    };
+
+    const {
+        isSupported,
+        isListening,
+        startListening,
+        stopListening,
+        transcript
+    } = useVoiceRecognition();
+
+    useEffect(() => {
+        console.log('Transcript:', transcript);
+        if (!transcript) return;
+
+        const parsedCommand = parseVoiceCommand(transcript);
+        if (parsedCommand.isValid) {
+            const newPoint: Point = {
+                type: parsedCommand.pointType || 'error',
+                x: 0,
+                y: 0,
+                player: 'me',
+                hand: (parsedCommand.hand as Hand) || 'drive',
+                shotType: (parsedCommand.shotType as ShotType) || 'fondo',
+                isTraining: true,
+                timestamp: Date.now()
+            };
+            addTrainingPoint(newPoint);
+            playSuccessBeep();
+        }
+    }, [transcript, addTrainingPoint]);
+
+    const handleToggleVoice = () => {
+        if (audioContext.state === 'suspended') {
+            // Need user interaction to unlock audio context in some browsers
+            audioContext.resume();
+        }
+        if (isListening) stopListening();
+        else startListening();
+    };
+
     const handleSaveTraining = () => {
         if (trainingPoints.length === 0) {
             alert('Registra al menos un golpe antes de guardar');
@@ -61,7 +125,21 @@ export const TrainingControls = ({
     };
 
     return (
-        <div className="bg-transparent md:bg-white/10 md:backdrop-blur-md md:p-3 md:rounded-xl md:shadow-lg md:border md:border-white/5 flex flex-col gap-2">
+        <div className="bg-transparent md:bg-white/10 md:backdrop-blur-md md:p-3 md:rounded-xl md:shadow-lg md:border md:border-white/5 flex flex-col gap-2 relative">
+            {isSupported && (
+                <button
+                    onClick={handleToggleVoice}
+                    className={` w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-1.5 rounded-full md:rounded shadow-lg border flex items-center justify-center gap-2 transition-all text-xs font-bold uppercase ${isListening
+                        ? 'bg-red-500/20 md:bg-red-500/80 border-red-500 text-red-500 md:text-white animate-pulse'
+                        : 'bg-neutral-800 md:bg-neutral-800 border-white/20 text-white/50 hover:text-white'
+                        }`}
+                    title="Modo Voz"
+                >
+                    <span className="text-lg">🎤</span>
+                    <span className="hidden md:inline">{isListening ? 'Escuchando' : 'Voz'}</span>
+                </button>
+            )}
+
             <ShotSelector
                 pointType={pointType}
                 setPointType={setPointType}
