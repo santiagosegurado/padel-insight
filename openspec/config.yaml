@@ -1,0 +1,31 @@
+schema: spec-driven
+
+context: |
+  Tech stack: React 19, TypeScript, Vite, Zustand, Konva/React-Konva
+  Styling: Tailwind CSS, PostCSS
+  Linting: ESLint + TypeScript ESLint
+  Architecture: Component-based with state management via Zustand
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Identify affected components/stores
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include component diagrams for UI changes
+    - Document state management decisions with rationale
+  tasks:
+    - Group tasks by phase (infrastructure, implementation, testing)
+    - Use hierarchical numbering (1.1, 1.2, etc.)
+    - Keep tasks small enough to complete in one session
+  apply:
+    - Follow React functional component patterns
+    - Use existing Tailwind utility classes
+    - Follow Zustand store patterns in use
+  verify:
+    - Run lint before committing
+    - Compare implementation against every spec scenario
+  archive:
+    - Warn before merging destructive deltas
