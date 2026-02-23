@@ -5,6 +5,7 @@ interface ShotSelectorProps {
     setShotType: (type: string) => void;
     hand: string;
     setHand: (hand: string) => void;
+    mode?: 'stats' | 'tactics' | 'training';
 }
 
 const SHOT_TYPES = ['saque', 'resto', 'fondo', 'bole', 'bande', 'globo', 'smash'];
@@ -19,8 +20,13 @@ export const ShotSelector = ({
     shotType,
     setShotType,
     hand,
-    setHand
+    setHand,
+    mode = 'stats'
 }: ShotSelectorProps) => {
+    const isTrainingMode = mode === 'training';
+    const positiveLabel = isTrainingMode ? 'Aciertos' : 'Winner';
+    const negativeLabel = isTrainingMode ? 'Errores' : 'Error';
+
     return (
         <div className="flex flex-col gap-2">
             <div className="flex bg-black/20 p-1 rounded-lg">
@@ -31,7 +37,7 @@ export const ShotSelector = ({
                             : 'text-white/60 hover:text-white'
                         }`}
                 >
-                    Winner
+                    {positiveLabel}
                 </button>
                 <button
                     onClick={() => setPointType('error')}
@@ -40,7 +46,7 @@ export const ShotSelector = ({
                             : 'text-white/60 hover:text-white'
                         }`}
                 >
-                    Error
+                    {negativeLabel}
                 </button>
             </div>
 
