@@ -41,11 +41,13 @@ export const TrainingHistoryModal = ({
         const winners = allPoints.filter(p => p.type === 'winner').length;
         const errors = allPoints.filter(p => p.type === 'error').length;
 
-        // Agrupar por tipo de golpe
+        // Agrupar por tipo de golpe y mano
         const byType: Record<string, number> = {};
         allPoints.forEach(p => {
+            const hand = p.hand === 'drive' ? 'Drive' : p.hand === 'reves' ? 'Revés' : '';
             const type = p.shotType || 'Sin definir';
-            byType[type] = (byType[type] || 0) + 1;
+            const key = hand ? `${type} (${hand})` : type;
+            byType[key] = (byType[key] || 0) + 1;
         });
 
         // Separar winners y errors por tipo
@@ -53,11 +55,14 @@ export const TrainingHistoryModal = ({
         const errorsByType: Record<string, number> = {};
 
         allPoints.forEach(p => {
+            const hand = p.hand === 'drive' ? 'Drive' : p.hand === 'reves' ? 'Revés' : '';
             const type = p.shotType || 'Sin definir';
+            const key = hand ? `${type} (${hand})` : type;
+
             if (p.type === 'winner') {
-                winnersByType[type] = (winnersByType[type] || 0) + 1;
+                winnersByType[key] = (winnersByType[key] || 0) + 1;
             } else if (p.type === 'error') {
-                errorsByType[type] = (errorsByType[type] || 0) + 1;
+                errorsByType[key] = (errorsByType[key] || 0) + 1;
             }
         });
 

@@ -73,10 +73,27 @@ export const TrainingControls = ({
 
         const parsedCommand = parseVoiceCommand(transcript);
         if (parsedCommand.isValid) {
+
+            // Set default positions based on the shot type and hand
+            let defaultX = 50; // Center
+            let defaultY = 80; // Back of court
+
+            if (parsedCommand.hand === 'drive') {
+                defaultX = 75; // Right side
+            } else if (parsedCommand.hand === 'reves') {
+                defaultX = 25; // Left side
+            }
+
+            if (parsedCommand.shotType === 'volea') {
+                defaultY = 25; // Close to net
+            } else if (parsedCommand.shotType === 'bandeja' || parsedCommand.shotType === 'remate') {
+                defaultY = 40; // Mid-court
+            }
+
             const newPoint: Point = {
                 type: parsedCommand.pointType || 'error',
-                x: 0,
-                y: 0,
+                x: defaultX,
+                y: defaultY,
                 player: 'me',
                 hand: (parsedCommand.hand as Hand) || 'drive',
                 shotType: (parsedCommand.shotType as ShotType) || 'fondo',
